@@ -3,9 +3,9 @@ library(tidyverse)
 library(dagitty)
 library(lavaan)
 
-setwd("C:/Users/soeve/Downloads")
-df <- read.csv("student/student-mat.csv", sep = ";")
-View(df)
+# As everyone has their own folder for this, better to just set it manually.
+# setwd("C:/Users/soeve/Downloads")
+df <- read.csv("student-por.csv", sep = ";")
 
 
 
@@ -14,9 +14,7 @@ selected_df <- df %>%
                 famsup, freetime, goout, health, higher, paid, schoolsup, sex,
                 studytime)
 
-# selected_df <-  drop_na(selected_df) #Needed? G3 column contains NA
-
-View(selected_df)
+selected_df <-  drop_na(selected_df) #Needed? G3 column contains NA
 
 
 # --------------
@@ -41,12 +39,17 @@ schoolsup [pos="-0.446,-0.436"]
 sex [pos="-0.691,0.922"]
 studytime [pos="0.563,0.614"]
 Dalc -> health
+Dalc -> Walc
+Dalc -> studytime
 Pstatus -> famrel
 Walc -> health
+Walc -> studytime
 absences -> G3
 activities -> freetime
 age -> G3
+age -> failures
 age -> goout
+age -> higher
 failures -> G3
 famrel -> absences
 famrel -> famsup
@@ -59,6 +62,9 @@ goout -> Walc
 goout -> freetime
 health -> G3
 higher -> studytime
+higher -> G3
+higher -> Dalc
+higher -> failures
 paid -> freetime
 paid -> studytime
 schoolsup -> freetime
@@ -82,7 +88,7 @@ selected_df$paid <- as.numeric(ordered(selected_df$paid, c("yes", "no")))
 selected_df$activities <- as.numeric(ordered(selected_df$activities, c("yes", "no")))
 selected_df$higher <- as.numeric(ordered(selected_df$higher, c("yes", "no")))
 
-selected_df$age <- ordered(selected_df$age, 
+selected_df$age <- ordered(selected_df$age,
                            levels=as_vector(unique(sort(selected_df$age))))
 selected_df$studytime <- ordered(selected_df$studytime,
                            levels=as_vector(unique(sort(selected_df$studytime))))
@@ -103,13 +109,8 @@ selected_df$absences <- ordered(selected_df$absences,
 selected_df$G3 <- ordered(selected_df$G3,
                            levels=as_vector(unique(sort(selected_df$G3))))
 
-
-
-View(selected_df)
-
 # Extract polychoric correlation matrix
 m <- lavCor(selected_df)
-m
 
 #  Test model using polychoric correlation matrix
 localTests(g, sample.cov=m, sample.nobs=nrow(selected_df))
