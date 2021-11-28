@@ -115,4 +115,10 @@ m <- lavCor(selected_df)
 #  Test model using polychoric correlation matrix
 localTests(g, sample.cov=m, sample.nobs=nrow(selected_df))
 
-
+### PATH COEFFICIENTS ###
+fit <- sem( toString(g,"lavaan"), sample.cov=m, sample.nobs=nrow(selected_df) )
+summary(fit)
+fg <- lavaanToGraph(fit, digits=2)
+cg <- coordinates(g)
+coordinates(fg) <- cg
+plot(fg, show.coefficients=TRUE)
