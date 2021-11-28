@@ -82,32 +82,32 @@ plot(g)
 # Ordered variables needed for poly
 selected_df$sex <- as.numeric(ordered(selected_df$sex, c("F", "M")))
 selected_df$Pstatus <- as.numeric(ordered(selected_df$Pstatus, c("T", "A")))
-selected_df$schoolsup <- as.numeric(ordered(selected_df$schoolsup, c("yes", "no")))
-selected_df$famsup <- as.numeric(ordered(selected_df$famsup, c("yes", "no")))
-selected_df$paid <- as.numeric(ordered(selected_df$paid, c("yes", "no")))
-selected_df$activities <- as.numeric(ordered(selected_df$activities, c("yes", "no")))
-selected_df$higher <- as.numeric(ordered(selected_df$higher, c("yes", "no")))
+selected_df$schoolsup <- as.numeric(ordered(selected_df$schoolsup, c("no", "yes")))
+selected_df$famsup <- as.numeric(ordered(selected_df$famsup, c("no", "yes")))
+selected_df$paid <- as.numeric(ordered(selected_df$paid, c("no", "yes")))
+selected_df$activities <- as.numeric(ordered(selected_df$activities, c("no", "yes")))
+selected_df$higher <- as.numeric(ordered(selected_df$higher, c("no", "yes")))
 
-selected_df$age <- ordered(selected_df$age,
-                           levels=as_vector(unique(sort(selected_df$age))))
-selected_df$studytime <- ordered(selected_df$studytime,
-                           levels=as_vector(unique(sort(selected_df$studytime))))
-selected_df$famrel <- ordered(selected_df$famrel,
-                           levels=as_vector(unique(sort(selected_df$famrel))))
-selected_df$freetime <- ordered(selected_df$freetime,
-                           levels=as_vector(unique(sort(selected_df$freetime))))
-selected_df$goout <- ordered(selected_df$goout,
-                           levels=as_vector(unique(sort(selected_df$goout))))
-selected_df$Dalc <- ordered(selected_df$Dalc,
-                           levels=as_vector(unique(sort(selected_df$Dalc))))
-selected_df$Walc <- ordered(selected_df$Walc,
-                           levels=as_vector(unique(sort(selected_df$Walc))))
-selected_df$health <- ordered(selected_df$health,
-                           levels=as_vector(unique(sort(selected_df$health))))
-selected_df$absences <- ordered(selected_df$absences,
-                            levels=as_vector(unique(sort(selected_df$absences))))
-selected_df$G3 <- ordered(selected_df$G3,
-                           levels=as_vector(unique(sort(selected_df$G3))))
+# selected_df$age <- ordered(selected_df$age,
+#                            levels=as_vector(unique(sort(selected_df$age))))
+# selected_df$studytime <- ordered(selected_df$studytime,
+#                            levels=as_vector(unique(sort(selected_df$studytime))))
+# selected_df$famrel <- ordered(selected_df$famrel,
+#                            levels=as_vector(unique(sort(selected_df$famrel))))
+# selected_df$freetime <- ordered(selected_df$freetime,
+#                            levels=as_vector(unique(sort(selected_df$freetime))))
+# selected_df$goout <- ordered(selected_df$goout,
+#                            levels=as_vector(unique(sort(selected_df$goout))))
+# selected_df$Dalc <- ordered(selected_df$Dalc,
+#                            levels=as_vector(unique(sort(selected_df$Dalc))))
+# selected_df$Walc <- ordered(selected_df$Walc,
+#                            levels=as_vector(unique(sort(selected_df$Walc))))
+# selected_df$health <- ordered(selected_df$health,
+#                            levels=as_vector(unique(sort(selected_df$health))))
+# selected_df$absences <- ordered(selected_df$absences,
+#                             levels=as_vector(unique(sort(selected_df$absences))))
+# selected_df$G3 <- ordered(selected_df$G3,
+#                            levels=as_vector(unique(sort(selected_df$G3))))
 
 # Extract polychoric correlation matrix
 m <- lavCor(selected_df)
