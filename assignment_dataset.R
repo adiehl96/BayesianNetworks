@@ -20,26 +20,26 @@ selected_df <-  drop_na(selected_df) #Needed? G3 column contains NA
 # --------------
 # Creating the network
 g <- dagitty(' dag {
-Dalc [pos="-0.931,0.588"]
-G3 [pos="-0.021,1.387"]
+Dalc [pos="-0.908,0.332"]
+G3 [pos="0.039,1.478"]
 Pstatus [pos="-1.174,-1.119"]
-Walc [pos="-1.162,0.998"]
-absences [pos="-0.787,-0.678"]
-activities [pos="0.129,-1.391"]
-age [pos="-0.547,0.636"]
-failures [pos="0.427,1.036"]
-famrel [pos="-1.338,-0.528"]
-famsup [pos="-0.306,-1.226"]
-freetime [pos="-0.109,0.508"]
-goout [pos="-1.060,-0.183"]
+Walc [pos="-1.243,1.001"]
+absences [pos="-0.651,-0.640"]
+activities [pos="-0.217,-1.406"]
+age [pos="0.650,0.932"]
+failures [pos="0.531,0.332"]
+famrel [pos="-1.256,-0.492"]
+famsup [pos="-0.739,-1.038"]
+freetime [pos="0.020,-0.619"]
+goout [pos="-0.992,-0.225"]
 health [pos="-0.781,1.484"]
-higher [pos="0.768,-0.508"]
-paid [pos="0.507,-1.107"]
-schoolsup [pos="-0.446,-0.436"]
-sex [pos="-0.691,0.922"]
-studytime [pos="0.563,0.614"]
-Dalc -> health
+higher [pos="0.764,-0.897"]
+paid [pos="0.210,-1.341"]
+schoolsup [pos="0.449,-1.237"]
+sex [pos="-0.418,1.127"]
+studytime [pos="0.131,0.296"]
 Dalc -> Walc
+Dalc -> health
 Dalc -> studytime
 Pstatus -> famrel
 Walc -> health
@@ -61,10 +61,10 @@ goout -> Dalc
 goout -> Walc
 goout -> freetime
 health -> G3
-higher -> studytime
-higher -> G3
 higher -> Dalc
+higher -> G3
 higher -> failures
+higher -> studytime
 paid -> freetime
 paid -> studytime
 schoolsup -> freetime
