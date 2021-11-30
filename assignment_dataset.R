@@ -120,8 +120,66 @@ fit <- sem( toString(g,"lavaan"), sample.cov=m, sample.nobs=nrow(selected_df) )
 summary(fit)
 fg <- lavaanToGraph(fit, digits=2)
 cg <- coordinates(g)
+fg
 coordinates(fg) <- cg
+fg <- dagitty('dag {
+  Dalc [pos="-0.908,0.332"]
+  G3 [pos="0.039,1.478"]
+  Pstatus [pos="-1.174,-1.119"]
+  Walc [pos="-1.243,1.001"]
+  absences [pos="-0.651,-0.640"]
+  activities [pos="-0.217,-1.406"]
+  age [pos="0.650,0.932"]
+  failures [pos="0.531,0.332"]
+  famrel [pos="-1.256,-0.492"]
+  famsup [pos="-0.739,-1.038"]
+  freetime [pos="0.020,-0.619"]
+  goout [pos="-0.992,-0.225"]
+  health [pos="-0.781,1.484"]
+  higher [pos="0.764,-0.897"]
+  paid [pos="0.210,-1.341"]
+  schoolsup [pos="0.449,-1.237"]
+  sex [pos="-0.418,1.127"]
+  studytime [pos="0.131,0.296"]
+  Dalc -> Walc [beta="0.51"]
+  Dalc -> health [beta="-0.019"]
+  Dalc -> studytime [beta="0.025"]
+  Pstatus -> famrel [beta="-0.051"]
+  Walc -> health [beta="0.13"]
+  Walc -> studytime [beta="-0.16"]
+  absences -> G3 [beta="-0.016"]
+  activities -> freetime [beta="0.13"]
+  age -> G3 [beta="0.052"]
+  age -> failures [beta="0.26"]
+  age -> goout [beta="0.11"]
+  age -> higher [beta="-0.27"]
+  failures -> G3 [beta="-0.31"]
+  famrel -> absences [beta="-0.09"]
+  famrel -> famsup [beta="0.015"]
+  famrel -> health [beta="0.11"]
+  famsup -> freetime [beta="0.011"]
+  famsup -> studytime [beta="0.1"]
+  freetime -> health [beta="0.056"]
+  goout -> Dalc [beta="0.22"]
+  goout -> Walc [beta="0.25"]
+  goout -> freetime [beta="0.33"]
+  health -> G3 [beta="-0.076"]
+  higher -> Dalc [beta="-0.1"]
+  higher -> G3 [beta="0.22"]
+  higher -> failures [beta="-0.24"]
+  higher -> studytime [beta="0.16"]
+  paid -> freetime [beta="-0.058"]
+  paid -> studytime [beta="-0.0019"]
+  schoolsup -> freetime [beta="0.014"]
+  schoolsup -> studytime [beta="0.038"]
+  sex -> Dalc [beta="0.26"]
+  sex -> G3 [beta="-0.05"]
+  sex -> Walc [beta="0.16"]
+  sex -> studytime [beta="-0.13"]
+  studytime -> G3 [beta="0.15"]
+  studytime -> freetime [beta="-0.056"]}')
 plot(fg, show.coefficients=TRUE)
+# TODO kan ik rondjes maken?
 
 ### ISOLATED EFFECTS
 library(bnlearn)
