@@ -181,43 +181,82 @@ fg <- dagitty('dag {
 plot(fg, show.coefficients=TRUE)
 # TODO kan ik rondjes maken?
 
+# -----------------------------------
 ### ISOLATED EFFECTS
+# -----------------------------------
+# On the basis of adjustment sets
 library(bnlearn)
 net1 <- model2network(toString(g,"bnlearn"))
 df_scaled <- as.data.frame(scale(selected_df))
 fit1 <- bn.fit( net1, df_scaled )
 
-# FAMILY
+# FAMILY -----------------------------------
 
-# adjustmentSets(g,"famrel","G3")
-summary( lm( G3 ~ famrel + famsup + Pstatus, as.data.frame(scale(selected_df)) ) )
-## Attempting to predict G3 from a single variable. Doesn't work great hahah.
-# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"famrel",drop=F],method="bayes-lw")
-# plot(df_scaled[,"G3"],predicted.G3)
-# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"famsup",drop=F],method="bayes-lw")
-# plot(df_scaled[,"G3"],predicted.G3)
-# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"Pstatus",drop=F],method="bayes-lw")
-# plot(df_scaled[,"G3"],predicted.G3)
+adjustmentSets(g,"famrel","G3") # No adjustment set- isolated effect cannot be reliably quantified
+
+adjustmentSets(g,"famsup","G3")
+summary( lm( G3 ~ famsup + famrel, as.data.frame(scale(selected_df)) ) )
+# Coefficient is 5.825e-02 (not significant)
+
+adjustmentSets(g,"Pstatus","G3") # No adjustment set- isolated effect cannot be reliably quantified
+
+## Old attempts we probably won't use, but just in case
+# summary( lm( G3 ~ famrel + famsup + Pstatus, as.data.frame(scale(selected_df)) ) )
 
 ## Attempting to predict G3 from a group of variables. No idea if this approach is valid.
-predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("Pstatus","famrel","famsup"),drop=F],method="bayes-lw")
-plot(df_scaled[,"G3"],predicted.G3)
+# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("Pstatus","famrel","famsup"),drop=F],method="bayes-lw")
+# plot(df_scaled[,"G3"],predicted.G3)
 
 
-# SCHOOL
+# SCHOOL -----------------------------------
 
-summary( lm( G3 ~ schoolsup + absences + failures, as.data.frame(scale(selected_df)) ) )
-predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("schoolsup","absences","failures"),drop=F],method="bayes-lw")
-plot(df_scaled[,"G3"],predicted.G3)
+adjustmentSets(g,"schoolsup","G3") # No adjustment set- isolated effect cannot be reliably quantified
 
-# SOCIAL
+adjustmentSets(g,"absences","G3")
+summary( lm( G3 ~ absences + famrel, as.data.frame(scale(selected_df)) ) )
+# Coefficient is -8.640e-02 (*)
 
-summary( lm( G3 ~ Dalc + Walc + activities + freetime + goout, as.data.frame(scale(selected_df)) ) )
-predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("Dalc","Walc","activities","freetime","goout"),drop=F],method="bayes-lw")
-plot(df_scaled[,"G3"],predicted.G3)
+adjustmentSets(g,"failures","G3")
+summary( lm( G3 ~ failures + age + higher, as.data.frame(scale(selected_df)) ) )
+# Coefficient is -3.389e-01 (***)
 
-# INTRINSIC
+## Old attempts we probably won't use, but just in case
+# summary( lm( G3 ~ schoolsup + absences + failures, as.data.frame(scale(selected_df)) ) )
+# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("schoolsup","absences","failures"),drop=F],method="bayes-lw")
+# plot(df_scaled[,"G3"],predicted.G3)
 
-summary( lm( G3 ~ higher, as.data.frame(scale(selected_df)) ) )
-predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"higher",drop=F],method="bayes-lw")
-plot(df_scaled[,"G3"],predicted.G3)
+# SOCIAL -----------------------------------
+
+adjustmentSets(g,"Dalc","G3")
+summary( lm( G3 ~ Dalc + goout + higher + sex, as.data.frame(scale(selected_df)) ) )
+# Coefficient is -1.372e-01 (***)
+
+adjustmentSets(g,"Walc","G3")
+summary( lm( G3 ~ Walc + Dalc +  goout + sex, as.data.frame(scale(selected_df)) ) )
+# Coefficient is -5.471e-02 (not significant)
+
+adjustmentSets(g,"activities","G3") # No adjustment set- isolated effect cannot be reliably quantified
+
+adjustmentSets(g,"freetime","G3")
+summary( lm( G3 ~ freetime + famsup + goout + paid + schoolsup + studytime, as.data.frame(scale(selected_df)) ) )
+# Coefficient is -9.577e-02 (*)
+
+adjustmentSets(g,"goout","G3")
+summary( lm( G3 ~ goout + age, as.data.frame(scale(selected_df)) ) )
+# Coefficient is -7.660e-02 (.)
+
+## Old attempts we probably won't use, but just in case
+# summary( lm( G3 ~ Dalc + Walc + activities + freetime + goout, as.data.frame(scale(selected_df)) ) )
+# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("Dalc","Walc","activities","freetime","goout"),drop=F],method="bayes-lw")
+# plot(df_scaled[,"G3"],predicted.G3)
+
+# INTRINSIC -----------------------------------
+
+adjustmentSets(g,"higher","G3")
+summary( lm( G3 ~ higher + age, as.data.frame(scale(selected_df)) ) )
+# Coefficient is 3.269e-01 (***)
+
+## Old attempts we probably won't use, but just in case
+# summary( lm( G3 ~ higher, as.data.frame(scale(selected_df)) ) )
+# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"higher",drop=F],method="bayes-lw")
+# plot(df_scaled[,"G3"],predicted.G3)
