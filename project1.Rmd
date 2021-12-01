@@ -304,3 +304,9 @@ adjustmentSets(g,"higher","G3")
 summary( lm( G3 ~ higher + age, as.data.frame(scale(selected_df_por)) ) )
 ```
 
+```{r}
+# Scatterplots for strongest correlation
+ggplot(selected_df, aes(x = G3, y = failures)) +
+  geom_point() + geom_jitter()
+```
+
