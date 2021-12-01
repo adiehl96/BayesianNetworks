@@ -1,0 +1,200 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(dagitty)
+library(lavaan)
+library(bnlearn)
+
+df_por <- read.csv("student-por.csv", sep = ";")
+print(typeof(df_por))
+head(df_por)
+```
+```{r}
+df_mat <- read.csv("student-mat.csv", sep = ";")
+head(df_mat)
+```
+
+```{r}
+selected_df_por <- df_por %>%
+  dplyr::select(Dalc, G3, Pstatus, Walc, absences, activities, age, failures, famrel,
+                famsup, freetime, goout, health, higher, paid, schoolsup, sex,
+                studytime)
+
+selected_df_por <-  drop_na(selected_df_por) #Needed? G3 column contains NA
+selected_df_por
+```
+
+```{r}
+selected_df_mat <- df_mat %>%
+  dplyr::select(Dalc, G3, Pstatus, Walc, absences, activities, age, failures, famrel,
+                famsup, freetime, goout, health, higher, paid, schoolsup, sex,
+                studytime)
+
+selected_df_mat <-  drop_na(selected_df_mat) #Needed? G3 column contains NA
+selected_df_mat
+```
+
+
+```{r}
+# --------------
+# Creating the network
+g <- dagitty(' dag {
+Dalc [pos="-0.908,0.332"]
+G3 [pos="0.039,1.478"]
+Pstatus [pos="-1.174,-1.119"]
+Walc [pos="-1.243,1.001"]
+absences [pos="-0.651,-0.640"]
+activities [pos="-0.217,-1.406"]
+age [pos="0.650,0.932"]
+failures [pos="0.531,0.332"]
+famrel [pos="-1.256,-0.492"]
+famsup [pos="-0.739,-1.038"]
+freetime [pos="0.020,-0.619"]
+goout [pos="-0.992,-0.225"]
+health [pos="-0.781,1.484"]
+higher [pos="0.764,-0.897"]
+paid [pos="0.210,-1.341"]
+schoolsup [pos="0.449,-1.237"]
+sex [pos="-0.418,1.127"]
+studytime [pos="0.131,0.296"]
+Dalc -> Walc
+Dalc -> health
+Dalc -> studytime
+Pstatus -> famrel
+Walc -> health
+Walc -> studytime
+absences -> G3
+activities -> freetime
+age -> G3
+age -> failures
+age -> goout
+age -> higher
+failures -> G3
+famrel -> absences
+famrel -> famsup
+famrel -> health
+famsup -> freetime
+famsup -> studytime
+freetime -> health
+goout -> Dalc
+goout -> Walc
+goout -> freetime
+health -> G3
+higher -> Dalc
+higher -> G3
+higher -> failures
+higher -> studytime
+paid -> freetime
+paid -> studytime
+schoolsup -> freetime
+schoolsup -> studytime
+sex -> Dalc
+sex -> G3
+sex -> Walc
+sex -> studytime
+studytime -> G3
+studytime -> freetime
+}
+')
+plot(g)
+```
+
+
+```{r}
+# Ordered variables needed for poly
+selected_df_por$sex <- as.numeric(ordered(selected_df_por$sex, c("F", "M")))
+selected_df_por$Pstatus <- as.numeric(ordered(selected_df_por$Pstatus, c("T", "A")))
+selected_df_por$schoolsup <- as.numeric(ordered(selected_df_por$schoolsup, c("no", "yes")))
+selected_df_por$famsup <- as.numeric(ordered(selected_df_por$famsup, c("no", "yes")))
+selected_df_por$paid <- as.numeric(ordered(selected_df_por$paid, c("no", "yes")))
+selected_df_por$activities <- as.numeric(ordered(selected_df_por$activities, c("no", "yes")))
+selected_df_por$higher <- as.numeric(ordered(selected_df_por$higher, c("no", "yes")))
+```
+
+
+```{r}
+# Extract polychoric correlation matrix
+m <- lavCor(selected_df_por)
+m
+```
+
+
+```{r}
+#  Test model using polychoric correlation matrix
+localTests(g, sample.cov=m, sample.nobs=nrow(selected_df_por))
+```
+
+
+```{r}
+### PATH COEFFICIENTS ###
+fit <- sem( toString(g,"lavaan"), sample.cov=m, sample.nobs=nrow(selected_df_por) )
+summary(fit)
+```
+
+
+```{r}
+fg <- lavaanToGraph(fit, digits=2)
+cg <- coordinates(g)
+coordinates(fg) <- cg
+plot(fg, show.coefficients=TRUE)
+```
+
+
+```{r}
+### ISOLATED EFFECTS
+net1 <- model2network(toString(g,"bnlearn"))
+df_scaled <- as.data.frame(scale(selected_df_por))
+fit1 <- bn.fit( net1, df_scaled )
+
+# FAMILY
+
+# adjustmentSets(g,"famrel","G3")s
+summary( lm( G3 ~ famrel + famsup + Pstatus, as.data.frame(scale(selected_df_por)) ) )
+## Attempting to predict G3 from a single variable. Doesn't work great hahah.
+# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"famrel",drop=F],method="bayes-lw")
+# plot(df_scaled[,"G3"],predicted.G3)
+# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"famsup",drop=F],method="bayes-lw")
+# plot(df_scaled[,"G3"],predicted.G3)
+# predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"Pstatus",drop=F],method="bayes-lw")
+# plot(df_scaled[,"G3"],predicted.G3)
+```
+
+
+
+```{r}
+## Attempting to predict G3 from a group of variables. No idea if this approach is valid.
+predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("Pstatus","famrel","famsup"),drop=F],method="bayes-lw")
+plot(df_scaled[,"G3"],predicted.G3)
+```
+
+```{r}
+# SCHOOL
+
+summary( lm( G3 ~ schoolsup + absences + failures, as.data.frame(scale(selected_df_por)) ) )
+predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("schoolsup","absences","failures"),drop=F],method="bayes-lw")
+plot(df_scaled[,"G3"],predicted.G3)
+```
+# SOCIAL
+```{r}
+summary( lm( G3 ~ Dalc + Walc + activities + freetime + goout, as.data.frame(scale(selected_df_por)) ) )
+predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,c("Dalc","Walc","activities","freetime","goout"),drop=F],method="bayes-lw")
+plot(df_scaled[,"G3"],predicted.G3)
+
+```
+
+```{r}
+# INTRINSIC
+summary( lm( G3 ~ higher, as.data.frame(scale(selected_df_por)) ) )
+predicted.G3 <- predict(fit1,node="G3",data=df_scaled[,"higher",drop=F],method="bayes-lw")
+plot(df_scaled[,"G3"],predicted.G3)
+
+```
+
+
