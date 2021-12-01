@@ -4,7 +4,7 @@ output:
   html_document:
     df_print: paged
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r}
@@ -120,11 +120,28 @@ selected_df_por$activities <- as.numeric(ordered(selected_df_por$activities, c("
 selected_df_por$higher <- as.numeric(ordered(selected_df_por$higher, c("no", "yes")))
 ```
 
+```{r}
+# Ordered variables needed for poly
+selected_df_mat$sex <- as.numeric(ordered(selected_df_mat$sex, c("F", "M")))
+selected_df_mat$Pstatus <- as.numeric(ordered(selected_df_mat$Pstatus, c("T", "A")))
+selected_df_mat$schoolsup <- as.numeric(ordered(selected_df_mat$schoolsup, c("no", "yes")))
+selected_df_mat$famsup <- as.numeric(ordered(selected_df_mat$famsup, c("no", "yes")))
+selected_df_mat$paid <- as.numeric(ordered(selected_df_mat$paid, c("no", "yes")))
+selected_df_mat$activities <- as.numeric(ordered(selected_df_mat$activities, c("no", "yes")))
+selected_df_mat$higher <- as.numeric(ordered(selected_df_mat$higher, c("no", "yes")))
+```
+
 
 ```{r}
 # Extract polychoric correlation matrix
 m <- lavCor(selected_df_por)
 m
+```
+
+```{r}
+# Extract polychoric correlation matrix
+m_mat <- lavCor(selected_df_mat)
+m_mat
 ```
 
 
@@ -135,9 +152,21 @@ localTests(g, sample.cov=m, sample.nobs=nrow(selected_df_por))
 
 
 ```{r}
+#  Test model using polychoric correlation matrix
+localTests(g, sample.cov=m_mat, sample.nobs=nrow(selected_df_mat))
+```
+
+
+```{r}
 ### PATH COEFFICIENTS ###
 fit <- sem( toString(g,"lavaan"), sample.cov=m, sample.nobs=nrow(selected_df_por) )
 summary(fit)
+```
+
+```{r}
+### PATH COEFFICIENTS ###
+fit_mat <- sem( toString(g,"lavaan"), sample.cov=m_mat, sample.nobs=nrow(selected_df_mat) )
+summary(fit_mat)
 ```
 
 
