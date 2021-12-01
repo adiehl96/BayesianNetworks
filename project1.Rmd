@@ -306,7 +306,7 @@ summary( lm( G3 ~ higher + age, as.data.frame(scale(selected_df_por)) ) )
 
 ```{r}
 # Scatterplots for strongest correlation
-ggplot(selected_df, aes(x = G3, y = failures)) +
+ggplot(selected_df_por, aes(x = G3, y = failures)) +
   geom_point() + geom_jitter()
 ```
 
